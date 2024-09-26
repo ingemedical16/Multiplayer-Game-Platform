@@ -58,7 +58,7 @@ Folder Structure
 1. **Clone the repository**:
 
 ```
-git clone https://github.com/your-repo/multiplayer-game-platform.git
+git clone https://github.com/ingemedical16/Multiplayer-Game-Platform.git
 cd multiplayer-game-platform
 ```
 2. **Install dependencies**:

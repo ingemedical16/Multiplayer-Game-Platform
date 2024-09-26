@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login page</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      $(document).ready(function() {
+            // Handle form submission
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const email = $('#email').val();
+                const password = $('#password').val();
+                
+                $.ajax({
+                    url: '/api/auth/login',  // Adjust to your login API route
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        email: email,
+                        password: password
+                    }),
+                    success: function(response) {
+                        // On successful login, save JWT token in cookies or localStorage
+                        document.cookie = `token=${response.token}; path=/`;
+
+                        // Redirect user after successful login
+                        window.location.href = "/";  // Adjust to your protected route
+                    },
+                    error: function(xhr, status, error) {
+                        // Show error message
+                        $('#errorMessage').text(xhr.responseJSON?.message || 'Login failed. Please try again.');
+                        $('#errorMessage').removeClass('d-none');
+                    }
+                });
+            });
+        });
+   
+    </script>
+  </head>
+  <body>
+    <header>
+       <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-logo">Game Platform</a>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="/" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="/blockland" class="nav-link">Blockland</a>
+        </li>
+        <li class="nav-item">
+          <a href="/starwar" class="nav-link">Star War</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="/api/auth/login" class="nav-link">Login</a>
+        </li>
+        <li class="nav-item">
+          <a href="/api/auth/signup" class="nav-link">Sign Up</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+    </header>
+    <div id="loginSection">
+      <!-- ring div starts here -->
+      <div id="ring" class="ring">
+        <i style="--clr: #00ff0a"></i>
+        <i style="--clr: #ff0057"></i>
+        <i style="--clr: #fffd44"></i>
+
+        <div class="login">
+          <h2>CONNEXION</h2>
+          <div id="errorMessage" class="alert alert-danger d-none"></div>
+          <form id="loginForm">
+            <!-- Email field -->
+            <div class="inputBx">
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Entre votre E-mail"
+              />
+            </div>
+
+            <!-- Password field -->
+            <div class="inputBx">
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Entre votre password"
+              />
+            </div>
+
+            <!-- Submit button -->
+            <div class="inputBx">
+              <input id="loginBtn" type="submit" value="Se connecter" />
+            </div>
+          </form>
+          <div className='text-center text-slate-600 pt-1'>
+            <p>Vous n'avez pas de compte ? <a href="/api/auth/signup'">Inscrivez-vous</a></p>
+        </div> 
+        </div>
+      </div>
+      <!-- ring div ends here -->
+    </div>
+  </body>
+</html>

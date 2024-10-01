@@ -173,6 +173,14 @@ const keys = {
   }
 }
 
+
+// Track the starting and ending touch coordinates for detecting swipes
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+const threshold = 50; // Minimum distance for swipe detection
+
 const SPEED = 5
 const playerInputs = []
 let sequenceNumber = 0
@@ -207,6 +215,7 @@ setInterval(() => {
 }, 15)
 
 window.addEventListener('keydown', (event) => {
+  console.log(event.code);
   if (!frontEndPlayers[socket.id]) return
 
   switch (event.code) {
@@ -223,6 +232,21 @@ window.addEventListener('keydown', (event) => {
       break
 
     case 'KeyD':
+      keys.d.pressed = true
+      break
+      case 'ArrowUp':
+      keys.w.pressed = true
+      break
+
+    case 'ArrowLeft':
+      keys.a.pressed = true
+      break
+
+    case 'ArrowDown':
+      keys.s.pressed = true
+      break
+
+    case 'ArrowRight':
       keys.d.pressed = true
       break
   }
@@ -247,9 +271,80 @@ window.addEventListener('keyup', (event) => {
     case 'KeyD':
       keys.d.pressed = false
       break
+      case 'ArrowUp':
+        keys.w.pressed = false
+        break
+  
+      case 'ArrowLeft':
+        keys.a.pressed = false
+        break
+  
+      case 'ArrowDown':
+        keys.s.pressed = false
+        break
+  
+      case 'ArrowRight':
+        keys.d.pressed = false
+        break
   }
 })
+// Touch event listeners for mobile (swipe gestures)
 
+// When the touch starts, capture the starting coordinates
+window.addEventListener('touchstart', (event) => {
+  const touch = event.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+});
+
+// When the touch moves, update the ending coordinates
+window.addEventListener('touchmove', (event) => {
+  const touch = event.touches[0];
+  touchEndX = touch.clientX;
+  touchEndY = touch.clientY;
+});
+
+// When the touch ends, determine the swipe direction
+window.addEventListener('touchend', () => {
+  if (!frontEndPlayers[socket.id]) return;
+
+  const diffX = touchEndX - touchStartX;
+  const diffY = touchEndY - touchStartY;
+
+  if (Math.abs(diffX) > Math.abs(diffY)) {
+    // Horizontal swipe
+    if (Math.abs(diffX) > threshold) {
+      if (diffX > 0) {
+        // Swipe right
+        keys.d.pressed = true;
+        setTimeout(() => (keys.d.pressed = false), 100); // Auto-release after swipe
+      } else {
+        // Swipe left
+        keys.a.pressed = true;
+        setTimeout(() => (keys.a.pressed = false), 100);
+      }
+    }
+  } else {
+    // Vertical swipe
+    if (Math.abs(diffY) > threshold) {
+      if (diffY > 0) {
+        // Swipe down
+        keys.s.pressed = true;
+        setTimeout(() => (keys.s.pressed = false), 100);
+      } else {
+        // Swipe up
+        keys.w.pressed = true;
+        setTimeout(() => (keys.w.pressed = false), 100);
+      }
+    }
+  }
+
+  // Reset touch coordinates
+  touchStartX = 0;
+  touchStartY = 0;
+  touchEndX = 0;
+  touchEndY = 0;
+});
 document.querySelector('#usernameForm').addEventListener('submit', (event) => {
   event.preventDefault()
   document.querySelector('#usernameForm').style.display = 'none'
